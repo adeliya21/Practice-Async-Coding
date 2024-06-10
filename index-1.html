@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <style>
+    #error {
+        color: red;
+    }
+  </style>
+</head>
+<body>
+    <input type="text" id="search" placeholder="Search for Gif">
+    <button id="searchBtn">Search</button>
+    <button id="newGifBtn">Get New Gif</button>
+    <div id="error"></div>
+    <img id="img" src="">
+
+    <script>
+        const img = document.querySelector('img');
+        const searchInput = document.getElementById('search');
+        const searchBtn = document.getElementById('searchBtn');
+        const newGifBtn = document.getElementById('newGifBtn');
+        const errorDiv = document.getElementById('error')
+
+        const myAPIkey = '';
+        let searchQuery = 'cats';
+
+        function fetchGif(query) {
+            fetch(`https://api.giphy.com/v1/gifs/translate?api_key=${myAPIkey}&s=${query}`, {mode: 'cors'})
+                .then(function(response) {
+                    return response.json();
+                })
+                .then(function(response) {
+                    if (response.data && response.data.images) {
+                        img.src = response.data.images.original.url;
+                        errorDiv.textContent = '';
+                    } else {
+                        img.src = '';
+                        errorDiv.textContent = 'No gifs found for your search query';
+                    }
+                })
+                .catch(function(error) {
+                    img.src = '';
+                    errorDiv.textContent = 'Error fetching gif. Check the concole for error.';
+                    console.log('Error fetching gif: ', error);
+                })
+        }
+
+        searchBtn.addEventListener('click', () => {
+            searchQuery = searchInput.value.trim() || searchQuery;
+            fetchGif(searchQuery);
+        });
+
+        newGifBtn.addEventListener('click', () => {
+            fetchGif(searchQuery);
+        });
+
+        // initial gif
+        fetchGif(searchQuery);
+    </script>
+</body>
+</html>
